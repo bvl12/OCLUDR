@@ -1,5 +1,8 @@
 # Occlusion Creator for Learning to Unilaterally Determine Re-emergence (OCLUDR) #
 
+## Purpose ##
+This is part of a project for CSC577. It generates video data with guaranteed occlusions for training a machine learning model to predict object re-emergence upon initally entering an occlusion. Ground truth information regarding the object's bounding box and occlusion state are generated automatically by the program using coordinate transforms and raycasts, removing the need for hand-labelling data. Generated data appears in the `./Dataset` folder. Some example data is provided in this repository.
+
 ## To run the project ##
 * Download it and open it in the Unity editor.
 * Load the occlusion scene with File > Open Scene > `./Assets/Scenes/OcclusionScene.unity`

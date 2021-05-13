@@ -8,8 +8,11 @@ public class GenerateOcclusions : MonoBehaviour{
 	bool objectRotation = false;
 	int counter;
 	int clipnum;
-	int maxClipnum = 10000;
-	float frameRate = 30f;
+	int maxClipNum = 10000;
+	float updateRate = 60f;
+	float captureRate = 2;
+	int captureUpdates = 600;
+	float noiseAmplitude = 2f;
 	float frameTime;
 	float time;
 	float[] occludingParams;
@@ -23,7 +26,6 @@ public class GenerateOcclusions : MonoBehaviour{
 	System.Random random;
 	Vector3 occludedObjectRotationalVelocity;
 	Vector3 targetObjectRotationalVelocity;
-	float noiseAmplitude = 2f;
 	int[] noiseStartIndices = new int[6];
 	// GameObject TargetBox;
 	// GameObject OccludingBox;
@@ -33,8 +35,7 @@ public class GenerateOcclusions : MonoBehaviour{
 
     // Start is called before the first frame update
 	void Start(){
-		frameTime = 1f/frameRate;
-		Debug.Log(frameTime);
+		frameTime = 1f/updateRate;
 		random = new System.Random();
 		AvailableObjects = new List<string>();
 		AvailableSkyboxes = new List<string>();
@@ -77,7 +78,7 @@ public class GenerateOcclusions : MonoBehaviour{
 				TargetObject.transform.Rotate(targetObjectRotationalVelocity);
 			}
 		
-      if(counter % 2 == 1){
+      if(counter % captureRate == 1){
 
 			RecordingCamera.transform.rotation = Quaternion.Lerp(RecordingCamera.transform.rotation, GenerateCameraRotation(), 0.3f*frameTime);
 			
@@ -102,7 +103,7 @@ public class GenerateOcclusions : MonoBehaviour{
 				}
 			}
 		}
-		if(counter % 450 == 0 && counter != 0){
+		if(counter % captureUpdates == 0 && counter != 0){
 			Destroy(TargetObject);
 			Destroy(OccludingObject);
 			InitTargetObject();
@@ -112,7 +113,7 @@ public class GenerateOcclusions : MonoBehaviour{
 			InitRandomSkybox();
 			RecordingCamera.transform.rotation = new Quaternion(0f, 0f, 0f, 1.0f);
 			clipnum++;
-			if(clipnum > maxClipnum){
+			if(clipnum > maxClipNum){
 				saving = false;
 			}
 			if(saving){
@@ -242,6 +243,10 @@ public class GenerateOcclusions : MonoBehaviour{
 		float occludingSinTermX = (float)random.NextDouble()*2;
 		float occludingSinTermY = (float)random.NextDouble()*2;
 
+		// THESE ARE THE PARAMETERS THAT ARE USED FOR OBJECT MOTION
+		// IF YOU WISH TO DEFINE YOUR OWN PARAMETRIC MOTION,
+		// IT IS NECESSARY TO UPDATE THESE, AND ADJUST THEIR CALCULATION TO ENSURE OCCLUSION
+		// They are set this way such that an occlusion takes place at `occludingTime`
 		float[] targetParameters = {(targetOcclusionPoint[0] - targetStartPos[0] - Mathf.Sin(targetSinTermX*occludingTime))/occludingTime, (targetOcclusionPoint[1] - targetStartPos[1] - Mathf.Sin(targetSinTermY*occludingTime))/occludingTime, targetSinTermX, targetSinTermY};
 		float[] occludingParameters = {(occludingOcclusionPoint[0] - occludingStartPos[0] - Mathf.Sin(occludingSinTermX*occludingTime))/occludingTime, (occludingOcclusionPoint[1] - occludingStartPos[1] - Mathf.Sin(occludingSinTermY*occludingTime))/occludingTime, occludingSinTermX, occludingSinTermY};
 
